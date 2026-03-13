@@ -15,7 +15,7 @@ database.inicializar_banco()
 
 # --- INTEGRAÇÃO COM IA ---
 # Substitua pela sua chave do Google AI Studio
-CHAVE_IA = "SUA_CHAVE_AQUI" 
+CHAVE_IA = "AIzaSyAuo0NCeifxlxn8jhvNEH7BwXQe3lHk32g" 
 genai.configure(api_key=CHAVE_IA)
 model_ia = genai.GenerativeModel('gemini-1.5-flash')
 
