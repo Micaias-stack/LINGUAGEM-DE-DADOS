@@ -16,12 +16,12 @@ database.inicializar_banco()
 
 # --- CONFIGURAÇÃO DA IA (GEMINI) ---
 # MUITO IMPORTANTE: Cole sua API KEY entre as aspas abaixo
-CHAVE_IA = "SUA_CHAVE_AQUI" 
+CHAVE_IA = "AIzaSyAuo0NCeifxlxn8jhvNEH7BwXQe3lHk32g" 
 
 # Inicializamos a variável como None para evitar o erro "not defined"
 model_ia = None 
 
-if CHAVE_IA != "SUA_CHAVE_AQUI" and CHAVE_IA.strip() != "":
+if CHAVE_IA != AIzaSyAuo0NCeifxlxn8jhvNEH7BwXQe3lHk32g"" and CHAVE_IA.strip() != "":
     try:
         genai.configure(api_key=CHAVE_IA)
         # Usamos 'gemini-pro' para máxima compatibilidade
