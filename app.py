@@ -4,7 +4,7 @@ import sys
 import os
 import google.generativeai as genai
 
-# Garante que o Python encontre os outros arquivos (auth e database) na raiz
+# Garante que o Python encontre os outros arquivos na raiz
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import database
@@ -18,14 +18,13 @@ database.inicializar_banco()
 # MUITO IMPORTANTE: Cole sua API KEY entre as aspas abaixo
 CHAVE_IA = "AIzaSyAuo0NCeifxlxn8jhvNEH7BwXQe3lHk32g" 
 
-# Inicializamos a variável como None para evitar o erro "not defined"
 model_ia = None 
 
 if CHAVE_IA != "SUA_CHAVE_AQUI" and CHAVE_IA.strip() != "":
     try:
         genai.configure(api_key=CHAVE_IA)
-        # Usamos 'gemini-pro' para máxima compatibilidade
-        model_ia = genai.GenerativeModel('gemini-pro')
+        # Atualizado para o modelo mais estável e rápido atualmente
+        model_ia = genai.GenerativeModel('gemini-1.5-flash')
     except Exception as e:
         st.sidebar.error(f"Erro na configuração da IA: {e}")
 
@@ -50,7 +49,7 @@ if auth.verificar_acesso():
             if st.button("Salvar no Banco"):
                 if nome:
                     database.salvar_linguagem(nome, criador, ano, dif)
-                    st.success(f"Registrado!")
+                    st.success(f"Registrado com sucesso!")
                     st.rerun()
 
         st.divider()
@@ -62,27 +61,30 @@ if auth.verificar_acesso():
     # Aba 2: Relacionamentos
     with tab2:
         st.header("🔗 Relacionamentos")
-        st.info("Módulo de arquitetura em expansão.")
+        st.info("Módulo de arquitetura: Em breve integração com grafos.")
 
     # Aba 3: IA
     with tab3:
         st.header("🤖 Consultoria IA")
         
         if CHAVE_IA == "SUA_CHAVE_AQUI":
-            st.warning("⚠️ Insira sua API KEY no código para habilitar a IA.")
+            st.warning("⚠️ Configure sua API KEY no arquivo app.py para usar a IA.")
         else:
-            pergunta = st.text_area("Dúvida técnica:", placeholder="Ex: Por que Python é bom para IA?")
+            pergunta = st.text_area("Dúvida técnica:", placeholder="Ex: Como criar um arquivo em Python?")
             
             if st.button("Consultar"):
                 if pergunta and model_ia:
-                    with st.spinner("IA processando..."):
+                    with st.spinner("IA processando resposta..."):
                         try:
+                            # Chamada para o modelo 1.5 Flash
                             response = model_ia.generate_content(pergunta)
-                            st.subheader("💡 Resposta:")
+                            st.subheader("💡 Resposta da IA:")
                             st.markdown(response.text)
                         except Exception as e:
                             st.error(f"Erro na resposta: {e}")
                 elif not model_ia:
-                    st.error("IA não inicializada. Verifique a chave.")
+                    st.error("Modelo de IA não carregado. Verifique a chave.")
+                else:
+                    st.warning("Digite sua dúvida antes de consultar.")
 else:
-    st.info("Aguardando login...")
+    st.info("Por favor, faça login no menu lateral.")
