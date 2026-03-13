@@ -1,7 +1,6 @@
 import sqlite3
 
 def inicializar_banco():
-    # Cria a conexão e a tabela se não existirem
     conn = sqlite3.connect('arquitetura.db')
     cursor = conn.cursor()
     cursor.execute('''
