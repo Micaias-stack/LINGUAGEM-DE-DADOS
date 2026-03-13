@@ -17,7 +17,7 @@ def verificar_acesso():
                 else:
                     st.error("Credenciais inválidas")
         else:
-            st.write(f"Logado como: **{st.session_state.role}**")
+            st.write(f"Conectado como: **{st.session_state.role}**")
             if st.button("Sair"):
                 st.session_state.autenticado = False
                 st.rerun()
