@@ -3,14 +3,13 @@ import pandas as pd
 import sys
 import os
 
-# Garante que o Python encontre os arquivos na raiz
+# Força o Python a reconhecer os arquivos na mesma pasta
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Importações seguras
 import database
 import auth
 
-# Configurações iniciais
+# Inicialização
 st.set_page_config(page_title="Arquitetura de Linguagens", layout="wide")
 database.inicializar_banco()
 
@@ -22,41 +21,37 @@ if auth.verificar_acesso():
     with tab1:
         st.header("Microsserviço de Linguagens")
         
-        # Formulário de Cadastro
         with st.expander("➕ Adicionar Nova Linguagem"):
-            col1, col2 = st.columns(2)
-            with col1:
-                nome = st.text_input("Nome da Linguagem", key="nome")
-                criador = st.text_input("Criador / Empresa", key="criador")
-            with col2:
-                ano = st.number_input("Ano de Lançamento", min_value=1950, max_value=2026, value=2024)
-                dif = st.select_slider("Dificuldade", options=["Fácil", "Médio", "Difícil"])
+            c1, c2 = st.columns(2)
+            with c1:
+                nome_input = st.text_input("Nome da Linguagem")
+                criador_input = st.text_input("Criador / Empresa")
+            with c2:
+                ano_input = st.number_input("Ano", min_value=1950, max_value=2026, value=2024)
+                dif_input = st.select_slider("Dificuldade", options=["Fácil", "Médio", "Difícil"])
             
-            if st.button("Salvar no Banco"):
-                if nome:
-                    # Chamada explícita usando o módulo 'database'
-                    database.salvar_linguagem(nome, criador, ano, dif)
-                    st.success(f"Linguagem {nome} salva!")
+            if st.button("Confirmar Cadastro"):
+                if nome_input:
+                    database.salvar_linguagem(nome_input, criador_input, ano_input, dif_input)
+                    st.success(f"{nome_input} salvo!")
                     st.rerun()
                 else:
-                    st.error("O nome é obrigatório.")
+                    st.error("Digite o nome!")
 
         st.divider()
-
-        # Listagem de Dados
-        dados = database.listar_linguagens()
-        if dados:
-            df = pd.DataFrame(dados, columns=["ID", "Nome", "Criador", "Ano", "Dificuldade"])
+        lista = database.listar_linguagens()
+        if lista:
+            df = pd.DataFrame(lista, columns=["ID", "Nome", "Criador", "Ano", "Dificuldade"])
             st.dataframe(df, use_container_width=True, hide_index=True)
         else:
-            st.info("O banco de dados está vazio.")
+            st.info("Nenhum dado cadastrado.")
 
     with tab2:
-        st.header("Microsserviço de Relacionamentos")
-        st.info("Em breve: Visualização de hierarquias.")
+        st.header("🔗 Relacionamentos")
+        st.write("Módulo de Microsserviço de Hierarquia.")
 
     with tab3:
-        st.header("Microsserviço de Recomendação")
-        st.info("Em breve: Algoritmo de sugestão.")
+        st.header("💡 Recomendações")
+        st.write("Módulo de Microsserviço de Recomendação.")
 else:
-    st.info("Por favor, faça o login no menu lateral para acessar o sistema.")
+    st.info("Faça login no menu lateral (admin / 123)")
