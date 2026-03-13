@@ -2,56 +2,84 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
+import google.generativeai as genai
 
-# Força o Python a reconhecer os arquivos na mesma pasta
+# Configuração de Caminho
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 import database
 import auth
 
-# Inicialização
-st.set_page_config(page_title="Arquitetura de Linguagens", layout="wide")
+# Configuração da Página
+st.set_page_config(page_title="Arquitetura Inteligente", layout="wide", page_icon="🤖")
 database.inicializar_banco()
 
-if auth.verificar_acesso():
-    st.title("🌐 Sistema de Arquitetura de Linguagens")
-    
-    tab1, tab2, tab3 = st.tabs(["📚 Linguagens", "🔗 Relacionamentos", "💡 Recomendações"])
+# --- INTEGRAÇÃO COM IA ---
+# Substitua pela sua chave do Google AI Studio
+CHAVE_IA = "SUA_CHAVE_AQUI" 
+genai.configure(api_key=CHAVE_IA)
+model_ia = genai.GenerativeModel('gemini-1.5-flash')
 
+if auth.verificar_acesso():
+    st.title("🌐 Portal de Arquitetura de Linguagens")
+    
+    tab1, tab2, tab3 = st.tabs(["📚 Base de Dados", "🔗 Relacionamentos", "🤖 Consultoria IA"])
+
+    # --- ABA 1: GERENCIAMENTO ---
     with tab1:
         st.header("Microsserviço de Linguagens")
         
-        with st.expander("➕ Adicionar Nova Linguagem"):
+        with st.expander("➕ Cadastrar Nova Tecnologia"):
             c1, c2 = st.columns(2)
             with c1:
-                nome_input = st.text_input("Nome da Linguagem")
-                criador_input = st.text_input("Criador / Empresa")
+                nome = st.text_input("Nome")
+                criador = st.text_input("Criador/Empresa")
             with c2:
-                ano_input = st.number_input("Ano", min_value=1950, max_value=2026, value=2024)
-                dif_input = st.select_slider("Dificuldade", options=["Fácil", "Médio", "Difícil"])
+                ano = st.number_input("Ano", min_value=1950, max_value=2026, value=2024)
+                dif = st.select_slider("Dificuldade", options=["Fácil", "Médio", "Difícil"])
             
-            if st.button("Confirmar Cadastro"):
-                if nome_input:
-                    database.salvar_linguagem(nome_input, criador_input, ano_input, dif_input)
-                    st.success(f"{nome_input} salvo!")
+            if st.button("Salvar Tecnologia"):
+                if nome:
+                    database.salvar_linguagem(nome, criador, ano, dif)
+                    st.success(f"{nome} adicionado com sucesso!")
                     st.rerun()
-                else:
-                    st.error("Digite o nome!")
 
         st.divider()
-        lista = database.listar_linguagens()
-        if lista:
-            df = pd.DataFrame(lista, columns=["ID", "Nome", "Criador", "Ano", "Dificuldade"])
+        dados = database.listar_linguagens()
+        if dados:
+            df = pd.DataFrame(dados, columns=["ID", "Linguagem", "Criador", "Ano", "Dificuldade"])
             st.dataframe(df, use_container_width=True, hide_index=True)
         else:
-            st.info("Nenhum dado cadastrado.")
+            st.info("O banco de dados está vazio.")
 
+    # --- ABA 2: RELACIONAMENTOS ---
     with tab2:
-        st.header("🔗 Relacionamentos")
-        st.write("Módulo de Microsserviço de Hierarquia.")
+        st.header("Microsserviço de Relacionamentos")
+        st.write("Aqui você verá a conexão entre as linguagens cadastradas.")
+        st.warning("Módulo em fase de estruturação de grafos.")
 
+    # --- ABA 3: INTELIGÊNCIA ARTIFICIAL ---
     with tab3:
-        st.header("💡 Recomendações")
-        st.write("Módulo de Microsserviço de Recomendação.")
+        st.header("🤖 Consultoria de Arquitetura")
+        st.write("Pergunte à IA qual a melhor linguagem para o seu objetivo.")
+        
+        pergunta = st.text_area("Descreva seu projeto ou dúvida técnica:", 
+                               placeholder="Ex: Quero criar um sistema de IA para iPhone, qual linguagem uso?")
+        
+        if st.button("Consultar Especialista Digital"):
+            if pergunta:
+                if CHAVE_IA == "SUA_CHAVE_AQUI":
+                    st.error("Por favor, configure sua API KEY no arquivo app.py")
+                else:
+                    with st.spinner("A IA está analisando sua requisição..."):
+                        try:
+                            prompt = f"Você é um arquiteto de software. Responda de forma curta: {pergunta}"
+                            response = model_ia.generate_content(prompt)
+                            st.subheader("💡 Recomendação da IA:")
+                            st.info(response.text)
+                        except Exception as e:
+                            st.error(f"Erro na conexão com IA: {e}")
+            else:
+                st.warning("Digite uma pergunta para a IA.")
+
 else:
-    st.info("Faça login no menu lateral (admin / 123)")
+    st.info("Utilize as credenciais no menu lateral para acessar o sistema.")
