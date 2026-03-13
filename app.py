@@ -16,7 +16,7 @@ database.inicializar_banco()
 
 # --- CONFIGURAÇÃO DA IA (GROQ) ---
 # COLE SUA CHAVE DO GROQ ABAIXO
-CHAVE_GROQ = "SUA_CHAVE_GROQ_AQUI" 
+CHAVE_GROQ = "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" 
 
 client = None
 if CHAVE_GROQ != "SUA_CHAVE_GROQ_AQUI" and CHAVE_GROQ.strip() != "":
