@@ -1,15 +1,18 @@
 import streamlit as st
 import pandas as pd
-from auth import verificar_acesso
-from database import inicializar_banco, listar_linguagens, salvar_linguagem
+import sys
+import os
 
-# Configurações iniciais
-st.set_page_config(page_title="Arquitetura de Linguagens", layout="wide")
-inicializar_banco()
+# Força o Python a olhar para a pasta atual (raiz)
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-if verificar_acesso():
-    st.title("🌐 Sistema de Arquitetura de Linguagens")
-    
+# Agora tentamos importar novamente
+try:
+    from auth import verificar_acesso
+    from database import inicializar_banco, listar_linguagens, salvar_linguagem
+except ImportError:
+    st.error("Erro ao carregar módulos. Verifique se auth.py e database.py estão no GitHub.")
+
     tab1, tab2, tab3 = st.tabs(["📚 Linguagens", "🔗 Relacionamentos", "💡 Recomendações"])
 
     with tab1:
