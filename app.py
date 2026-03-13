@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
-import google.generativeai as genai
+from groq import Groq
 
 # Garante que o Python encontre os outros arquivos na raiz
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -14,25 +14,22 @@ import auth
 st.set_page_config(page_title="Portal de Arquitetura", layout="wide", page_icon="🌐")
 database.inicializar_banco()
 
-# --- CONFIGURAÇÃO DA IA (GEMINI) ---
-# MUITO IMPORTANTE: Cole sua API KEY entre as aspas abaixo
-CHAVE_IA = "AIzaSyAuo0NCeifxlxn8jhvNEH7BwXQe3lHk32g" 
+# --- CONFIGURAÇÃO DA IA (GROQ) ---
+# COLE SUA CHAVE DO GROQ ABAIXO
+CHAVE_GROQ = "SUA_CHAVE_GROQ_AQUI" 
 
-model_ia = None 
-
-if CHAVE_IA != "SUA_CHAVE_AQUI" and CHAVE_IA.strip() != "":
+client = None
+if CHAVE_GROQ != "SUA_CHAVE_GROQ_AQUI" and CHAVE_GROQ.strip() != "":
     try:
-        genai.configure(api_key=CHAVE_IA)
-        # Atualizado para o modelo mais estável e rápido atualmente
-        model_ia = genai.GenerativeModel('gemini-1.5-flash')
+        client = Groq(api_key=CHAVE_GROQ)
     except Exception as e:
-        st.sidebar.error(f"Erro na configuração da IA: {e}")
+        st.sidebar.error(f"Erro ao configurar Groq: {e}")
 
 # --- INTERFACE ---
 if auth.verificar_acesso():
     st.title("🌐 Portal de Arquitetura de Linguagens")
     
-    tab1, tab2, tab3 = st.tabs(["📚 Base de Dados", "🔗 Relacionamentos", "🤖 Consultoria IA"])
+    tab1, tab2, tab3 = st.tabs(["📚 Base de Dados", "🔗 Relacionamentos", "⚡ Consultoria Groq"])
 
     # Aba 1: Banco de Dados
     with tab1:
@@ -63,28 +60,34 @@ if auth.verificar_acesso():
         st.header("🔗 Relacionamentos")
         st.info("Módulo de arquitetura: Em breve integração com grafos.")
 
-    # Aba 3: IA
+    # Aba 3: IA com Groq
     with tab3:
-        st.header("🤖 Consultoria IA")
+        st.header("⚡ Consultoria Ultra Rápida (Groq)")
         
-        if CHAVE_IA == "SUA_CHAVE_AQUI":
-            st.warning("⚠️ Configure sua API KEY no arquivo app.py para usar a IA.")
+        if CHAVE_GROQ == "SUA_CHAVE_GROQ_AQUI":
+            st.warning("⚠️ Insira sua API KEY do Groq no arquivo app.py")
         else:
             pergunta = st.text_area("Dúvida técnica:", placeholder="Ex: Como criar um arquivo em Python?")
             
-            if st.button("Consultar"):
-                if pergunta and model_ia:
-                    with st.spinner("IA processando resposta..."):
+            if st.button("Consultar Groq"):
+                if pergunta and client:
+                    with st.spinner("Groq pensando em alta velocidade..."):
                         try:
-                            # Chamada para o modelo 1.5 Flash
-                            response = model_ia.generate_content(pergunta)
+                            # Chamada para o modelo Llama 3 via Groq
+                            chat_completion = client.chat.completions.create(
+                                messages=[
+                                    {
+                                        "role": "user",
+                                        "content": pergunta,
+                                    }
+                                ],
+                                model="llama3-8b-8192",
+                            )
                             st.subheader("💡 Resposta da IA:")
-                            st.markdown(response.text)
+                            st.markdown(chat_completion.choices[0].message.content)
                         except Exception as e:
-                            st.error(f"Erro na resposta: {e}")
-                elif not model_ia:
-                    st.error("Modelo de IA não carregado. Verifique a chave.")
+                            st.error(f"Erro no Groq: {e}")
                 else:
-                    st.warning("Digite sua dúvida antes de consultar.")
+                    st.warning("Digite sua dúvida.")
 else:
     st.info("Por favor, faça login no menu lateral.")
