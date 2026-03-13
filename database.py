@@ -1,11 +1,8 @@
 import sqlite3
-import os
 
 def inicializar_banco():
-    if not os.path.exists('data'):
-        os.makedirs('data')
-        
-    conn = sqlite3.connect('data/arquitetura.db')
+    # Removemos a criação da pasta 'data/' para salvar na raiz
+    conn = sqlite3.connect('arquitetura.db')
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS languages (
@@ -20,7 +17,7 @@ def inicializar_banco():
     conn.close()
 
 def listar_linguagens():
-    conn = sqlite3.connect('data/arquitetura.db')
+    conn = sqlite3.connect('arquitetura.db')
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM languages")
     dados = cursor.fetchall()
