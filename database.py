@@ -23,3 +23,13 @@ def listar_linguagens():
     dados = cursor.fetchall()
     conn.close()
     return dados
+    def salvar_linguagem(nome, criador, ano, dificuldade):
+    conn = sqlite3.connect('arquitetura.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO languages (name, creator, year, difficulty)
+        VALUES (?, ?, ?, ?)
+    ''', (nome, criador, ano, dificuldade))
+    conn.commit()
+    conn.close()
+
