@@ -1,7 +1,7 @@
 import sqlite3
 
 def inicializar_banco():
-    # Removemos a criação da pasta 'data/' para salvar na raiz
+    # Cria a conexão e a tabela se não existirem
     conn = sqlite3.connect('arquitetura.db')
     cursor = conn.cursor()
     cursor.execute('''
@@ -16,14 +16,7 @@ def inicializar_banco():
     conn.commit()
     conn.close()
 
-def listar_linguagens():
-    conn = sqlite3.connect('arquitetura.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM languages")
-    dados = cursor.fetchall()
-    conn.close()
-    return dados
-    def salvar_linguagem(nome, criador, ano, dificuldade):
+def salvar_linguagem(nome, criador, ano, dificuldade):
     conn = sqlite3.connect('arquitetura.db')
     cursor = conn.cursor()
     cursor.execute('''
@@ -33,3 +26,10 @@ def listar_linguagens():
     conn.commit()
     conn.close()
 
+def listar_linguagens():
+    conn = sqlite3.connect('arquitetura.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM languages")
+    dados = cursor.fetchall()
+    conn.close()
+    return dados
